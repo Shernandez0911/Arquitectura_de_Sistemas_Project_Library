@@ -21,14 +21,14 @@ public final class Loan {
     @DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
     private Book book;
 
-    @DatabaseField(canBeNull = false)
-    private String loanDate;
+    @DatabaseField(canBeNull = false, persisterClass = LocalDatePersister.class)
+    private LocalDate loanDate;
 
-    @DatabaseField(canBeNull = false)
-    private String dueDate;
+    @DatabaseField(canBeNull = false, persisterClass = LocalDatePersister.class)
+    private LocalDate dueDate;
 
-    @DatabaseField
-    private String returnDate;
+    @DatabaseField (persisterClass = LocalDatePersister.class)
+    private LocalDate returnDate;
 
     @DatabaseField
     private boolean returned;
@@ -39,7 +39,7 @@ public final class Loan {
     public Loan() {
     }
 
-    public Loan(Member member, Book book, String loanDate, String dueDate) {
+    public Loan(Member member, Book book, LocalDate loanDate, LocalDate dueDate) {
         this.member = member;
         this.book = book;
         this.loanDate = loanDate;
@@ -72,38 +72,33 @@ public final class Loan {
         this.book = book;
     }
 
-    public String getLoanDate() {
+    public LocalDate getLoanDate() {
         return loanDate;
     }
 
-    public void setLoanDate(String loanDate) {
+    public void setLoanDate(LocalDate loanDate) {
         this.loanDate = loanDate;
     }
 
-    public String getDueDate() {
+    public LocalDate getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(String dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 
-    public String getReturnDate() {
+    public LocalDate getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(String returnDate) {
+    public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
     }
 
     public boolean isReturned() {
         return returned;
     }
-
-    public boolean isOverdue() {
-        return !returned && LocalDate.parse(dueDate).isBefore(LocalDate.now());
-    }
-
     public void setReturned(boolean returned) {
         this.returned = returned;
     }
