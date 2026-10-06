@@ -62,7 +62,6 @@ package "service" <<service>> {
   }
 
   class LoanService {
-    - {static} int DUE_DAYS = 21
     - LoanDao loanDao
     - BookDao bookDao
     + findAll() : List<Loan>
@@ -88,40 +87,46 @@ package "service" <<service>> {
     + findAll() : List<Reservation>
     + fulfill(int) : Loan
   }
+
+  class LoanPolicy {
+    + {static} int DUE_DAYS = 21
+    + {static} double FEE_PER_DAY = 1.0
+    - LoanPolicy()
+    + {static} dueDate(LocalDate) : LocalDate
+  }
+
+  class NotFoundException {
+    + NotFoundException(String)
+  }
+
 }
 
 package "dao" <<dao>> {
+  abstract class "BaseDao<T>" as BaseDao {
+    # Dao<T, Integer> dao
+    # BaseDao(ConnectionSource, Class<T>)
+    + findAll() : List<T>
+    + findById(int) : T
+    + create(T) : void
+    + update(T) : void
+    + delete(T) : void
+    + transaction(Callable<R>) : R
+  }
+
   class BookDao {
-    - Dao<Book, Integer> dao
-    + findAll() : List<Book>
-    + findById(int) : Book
-    + create(Book) : void
-    + update(Book) : void
-    + delete(Book) : void
+    + BookDao(ConnectionSource)
   }
 
   class MemberDao {
-    - Dao<Member, Integer> dao
-    + findAll() : List<Member>
-    + findById(int) : Member
-    + create(Member) : void
-    + update(Member) : void
+    + MemberDao(ConnectionSource)
   }
 
   class LoanDao {
-    - Dao<Loan, Integer> dao
-    + findAll() : List<Loan>
-    + findById(int) : Loan
-    + create(Loan) : void
-    + update(Loan) : void
+    + LoanDao(ConnectionSource)
   }
 
   class ReservationDao {
-    - Dao<Reservation, Integer> dao
-    + findAll() : List<Reservation>
-    + findById(int) : Reservation
-    + create(Reservation) : void
-    + update(Reservation) : void
+    + ReservationDao(ConnectionSource)
   }
 }
 
@@ -167,25 +172,25 @@ package "model" <<model>> {
     - int id
     - Member member
     - Book book
-    - String loanDate
-    - String dueDate
-    - String returnDate
+    - LocalDate loanDate
+    - LocalDate dueDate
+    - LocalDate returnDate
     - boolean returned
     - double overdueFee
     + Loan()
-    + Loan(Member, Book, String, String)
+    + Loan(Member, Book, LocalDate, LocalDate)
     + getId() : int
     + setId(int) : void
     + getMember() : Member
     + setMember(Member) : void
     + getBook() : Book
     + setBook(Book) : void
-    + getLoanDate() : String
-    + setLoanDate(String) : void
-    + getDueDate() : String
-    + setDueDate(String) : void
-    + getReturnDate() : String
-    + setReturnDate(String) : void
+    + getLoanDate() : LocalDate
+    + setLoanDate(LocalDate) : void
+    + getDueDate() : LocalDate
+    + setDueDate(LocalDate) : void
+    + getReturnDate() : LocalDate
+    + setReturnDate(LocalDate) : void
     + isReturned() : boolean
     + setReturned(boolean) : void
     + getOverdueFee() : double
@@ -196,18 +201,18 @@ package "model" <<model>> {
     - int id
     - Member member
     - Book book
-    - String reservedAt
+    - LocalDate reservedAt
     - boolean fulfilled
     + Reservation()
-    + Reservation(Member, Book, String)
+    + Reservation(Member, Book, LocalDate)
     + getId() : int
     + setId(int) : void
     + getMember() : Member
     + setMember(Member) : void
     + getBook() : Book
     + setBook(Book) : void
-    + getReservedAt() : String
-    + setReservedAt(String) : void
+    + getReservedAt() : LocalDate
+    + setReservedAt(LocalDate) : void
     + isFulfilled() : boolean
     + setFulfilled(boolean) : void
   }
@@ -215,11 +220,25 @@ package "model" <<model>> {
 
 package "db" <<db>> {
   class Database {
+    - {static} Logger log
     - ConnectionSource connectionSource
     + connectionSource() : ConnectionSource
     + seedIfEmpty() : void
   }
+
+  class LocalDatePersister {
+    - {static} LocalDatePersister SINGLETON
+    - LocalDatePersister()
+    + {static} getSingleton() : LocalDatePersister
+    + parseDefaultString(FieldType, String) : Object
+    + resultToSqlArg(FieldType, DatabaseResults, int) : Object
+    + sqlArgToJava(FieldType, Object, int) : Object
+    + javaToSqlArg(FieldType, Object) : Object
+  }
 }
+
+class BaseDataType <<ORMLite>>
+class RuntimeException <<java.lang>>
 
 ' ----- controller -> service -----
 BookController "1" --> "1" BookService
@@ -241,6 +260,19 @@ ReservationService "1" --> "1" BookDao
 ReservationService "1" --> "1" MemberDao
 ReservationService "1" --> "1" LoanDao
 
+' ----- inheritance -----
+BaseDao <|-- BookDao : T = Book
+BaseDao <|-- MemberDao : T = Member
+BaseDao <|-- LoanDao : T = Loan
+BaseDao <|-- ReservationDao : T = Reservation
+BaseDataType <|-- LocalDatePersister
+RuntimeException <|-- NotFoundException
+
+' ----- service -> policy / exception -----
+MemberService ..> LoanPolicy
+ReservationService ..> LoanPolicy
+BookService ..> NotFoundException : throws
+
 ' ----- dao -> model / db -----
 BookDao "1" --> "0..*" Book
 MemberDao "1" --> "0..*" Member
@@ -256,5 +288,9 @@ Loan "0..*" --> "1" Member
 Loan "0..*" --> "1" Book
 Reservation "0..*" --> "1" Member
 Reservation "0..*" --> "1" Book
+
+' ----- model -> persister (LocalDate columns) -----
+Loan ..> LocalDatePersister
+Reservation ..> LocalDatePersister
 
 @enduml
