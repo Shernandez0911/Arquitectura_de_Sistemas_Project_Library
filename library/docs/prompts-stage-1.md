@@ -19,3 +19,4 @@
 | 15     | claude-sonnet-5-5 | read "index.html" and check if the test fails because of it | none (analysis only) |
 | 16     | claude-sonnet-5-5 | check if there are any points from changes 1 to 6 that haven't been implemented yet | none (analysis only) |
 | 17     | claude-sonnet-5-5 | change database.java to match the description in change 10 | `db/Database.java` |
+| 18     | claude-sonnet-5-5 | apply the changes from change 13 to app.js and index.html | `resources/public/app.js` |
