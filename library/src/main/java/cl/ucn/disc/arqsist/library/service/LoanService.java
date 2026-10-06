@@ -16,8 +16,6 @@ import java.util.List;
 
 public final class LoanService {
 
-    public static final int DUE_DAYS = 21;
-
     private final LoanDao loanDao;
     private final BookDao bookDao;
 
@@ -56,6 +54,9 @@ public final class LoanService {
     }
 
     public List<Loan> overdueLoans() throws SQLException {
-        return loanDao.findAll().stream().filter(Loan::isOverdue).toList();
+        LocalDate today = LocalDate.now();
+        return loanDao.findAll().stream()
+                .filter(loan -> !loan.isReturned() && loan.getDueDate().isBefore(today))
+                .toList();
     }
 }
