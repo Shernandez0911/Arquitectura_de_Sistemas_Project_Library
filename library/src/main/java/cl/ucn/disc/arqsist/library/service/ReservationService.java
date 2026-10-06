@@ -17,13 +17,39 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Reservation service: records reservations and turns them into loans.
+ */
 public final class ReservationService {
 
+    /**
+     * Persistence access for reservations.
+     */
     private final ReservationDao reservationDao;
+
+    /**
+     * Persistence access for books.
+     */
     private final BookDao bookDao;
+
+    /**
+     * Persistence access for members.
+     */
     private final MemberDao memberDao;
+
+    /**
+     * Persistence access for loans.
+     */
     private final LoanDao loanDao;
 
+    /**
+     * Creates the service.
+     *
+     * @param reservationDao the reservation DAO.
+     * @param bookDao        the book DAO.
+     * @param memberDao      the member DAO.
+     * @param loanDao        the loan DAO.
+     */
     public ReservationService(ReservationDao reservationDao, BookDao bookDao, MemberDao memberDao, LoanDao loanDao) {
         this.reservationDao = reservationDao;
         this.bookDao = bookDao;
@@ -31,6 +57,14 @@ public final class ReservationService {
         this.loanDao = loanDao;
     }
 
+    /**
+     * Records a reservation made today.
+     *
+     * @param bookId   the id of the book to reserve.
+     * @param memberId the id of the member who reserves.
+     * @return the new reservation.
+     * @throws SQLException if a read or write fails.
+     */
     public Reservation reserve(int bookId, int memberId) throws SQLException {
         Book book = bookDao.findById(bookId);
         Member member = memberDao.findById(memberId);
@@ -39,10 +73,25 @@ public final class ReservationService {
         return reservation;
     }
 
+    /**
+     * Lists every reservation.
+     *
+     * @return all reservations.
+     * @throws SQLException if the query fails.
+     */
     public List<Reservation> findAll() throws SQLException {
         return reservationDao.findAll();
     }
 
+    /**
+     * Turns a pending reservation into a loan that is due according to
+     * {@link LoanPolicy#dueDate(LocalDate)}.
+     *
+     * @param reservationId the id of the reservation to fulfill.
+     * @return the new loan.
+     * @throws IllegalStateException if the reservation does not exist or was already fulfilled.
+     * @throws SQLException          if a read or write fails.
+     */
     public Loan fulfill(int reservationId) throws SQLException {
         Reservation reservation = reservationDao.findById(reservationId);
         if (reservation == null || reservation.isFulfilled()) {

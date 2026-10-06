@@ -22,3 +22,4 @@
 | 18     | claude-sonnet-5-5 | apply the changes from change 13 to app.js and index.html | `resources/public/app.js` |
 | 19     | claude-sonnet-5-5 | add the logger to logback.xml as described in change 14 | `resources/logback.xml` |
 | 20     | claude-sonnet-5-5 | update class diagram to reflect the current state of the project as described in change 16 | `docs/class-diagram.puml` |
+| 21     | claude-sonnet-5-5 | can you update the remaining java files with javadoc as described in refactor.md | `db/LocalDatePersister.java`, `db/Database.java`, `model/Loan.java`, `model/Reservation.java`, `service/MemberService.java`, `service/LoanService.java`, `service/ReservationService.java` |

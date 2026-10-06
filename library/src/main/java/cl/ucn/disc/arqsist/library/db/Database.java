@@ -20,12 +20,27 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Opens the database, creates the tables and loads the initial data.
+ */
 public final class Database {
 
+    /**
+     * Logger for the seeding steps.
+     */
     private static final Logger log = LoggerFactory.getLogger(Database.class);
 
+    /**
+     * The connection shared by every DAO.
+     */
     private final ConnectionSource connectionSource;
 
+    /**
+     * Opens the connection and creates the four tables if they do not exist.
+     *
+     * @param jdbcUrl the JDBC URL of the database.
+     * @throws SQLException if the connection or a table creation fails.
+     */
     public Database(String jdbcUrl) throws SQLException {
         this.connectionSource = new JdbcConnectionSource(jdbcUrl);
         TableUtils.createTableIfNotExists(connectionSource, Book.class);
@@ -34,10 +49,22 @@ public final class Database {
         TableUtils.createTableIfNotExists(connectionSource, Reservation.class);
     }
 
+    /**
+     * Gives access to the connection.
+     *
+     * @return the connection source.
+     */
     public ConnectionSource connectionSource() {
         return connectionSource;
     }
 
+    /**
+     * Loads the initial data into each table that is empty: three books, three members,
+     * three loans (returned, active and overdue) and one reservation. Tables that already
+     * have rows are left unchanged.
+     *
+     * @throws SQLException if a read or write fails.
+     */
     public void seedIfEmpty() throws SQLException {
         Dao<Book, Integer> bookDao = DaoManager.createDao(connectionSource, Book.class);
         if (bookDao.queryForAll().isEmpty()) {

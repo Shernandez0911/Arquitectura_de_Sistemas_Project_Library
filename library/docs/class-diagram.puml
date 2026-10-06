@@ -227,7 +227,7 @@ package "db" <<db>> {
   }
 
   class LocalDatePersister {
-    - {static} LocalDatePersister SINGLETON
+    - {static} LocalDatePersister singleTon
     - LocalDatePersister()
     + {static} getSingleton() : LocalDatePersister
     + parseDefaultString(FieldType, String) : Object
