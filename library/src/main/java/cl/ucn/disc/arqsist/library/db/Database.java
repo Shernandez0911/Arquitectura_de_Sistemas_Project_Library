@@ -13,12 +13,16 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 public final class Database {
+
+    private static final Logger log = LoggerFactory.getLogger(Database.class);
 
     private final ConnectionSource connectionSource;
 
@@ -37,6 +41,7 @@ public final class Database {
     public void seedIfEmpty() throws SQLException {
         Dao<Book, Integer> bookDao = DaoManager.createDao(connectionSource, Book.class);
         if (bookDao.queryForAll().isEmpty()) {
+            log.debug("Seeding books");
             bookDao.create(new Book("Clean Code", "Robert C. Martin", "9780132350884", 3));
             bookDao.create(new Book("The Pragmatic Programmer", "Hunt & Thomas", "9780201616224", 2));
             bookDao.create(new Book("Design Patterns", "Gamma et al.", "9780201633610", 4));
@@ -44,39 +49,49 @@ public final class Database {
 
         Dao<Member, Integer> memberDao = DaoManager.createDao(connectionSource, Member.class);
         if (memberDao.queryForAll().isEmpty()) {
+            log.debug("Seeding members");
             memberDao.create(new Member("Ada Lovelace", "ada@example.com"));
             memberDao.create(new Member("Grace Hopper", "grace@example.com"));
             memberDao.create(new Member("Alan Turing", "alan@example.com"));
-            memberDao.create(new Member("Edsger Dijkstra", "edsger@example.com"));
-            memberDao.create(new Member("Barbara Liskov", "barbara@example.com"));
-            memberDao.create(new Member("Donald Knuth", "donald@example.com"));
         }
 
         Dao<Loan, Integer> loanDao = DaoManager.createDao(connectionSource, Loan.class);
         if (loanDao.queryForAll().isEmpty()) {
+            log.debug("Seeding loans");
             List<Book> books = bookDao.queryForAll();
             List<Member> members = memberDao.queryForAll();
             LocalDate today = LocalDate.now();
 
-            createLoan(bookDao, loanDao, members.get(0), books.get(0), today.minusDays(5), today.plusDays(9));
-            createLoan(bookDao, loanDao, members.get(1), books.get(2), today.minusDays(2), today.plusDays(12));
-            createLoan(bookDao, loanDao, members.get(2), books.get(1), today.minusDays(30), today.minusDays(9));
+            // Returned loan: the copy is back, so the available count does not change.
+            log.debug("Creating returned loan");
+            Loan returned = new Loan(members.getFirst(), books.getFirst(), today.minusDays(30), today.minusDays(9));
+            returned.setReturned(true);
+            returned.setReturnDate(today.minusDays(10));
+            loanDao.create(returned);
+
+            // Active loan: one copy is out.
+            log.debug("Creating active loan");
+            Book activeBook = books.get(2);
+            loanDao.create(new Loan(members.get(1), activeBook, today.minusDays(2), today.plusDays(12)));
+            activeBook.setAvailableCopies(activeBook.getAvailableCopies() - 1);
+            bookDao.update(activeBook);
+
+            // Overdue loan: open and past its due date, one copy is out.
+            log.debug("Creating overdue loan");
+            Book overdueBook = books.get(1);
+            loanDao.create(new Loan(members.get(2), overdueBook, today.minusDays(30), today.minusDays(9)));
+            overdueBook.setAvailableCopies(overdueBook.getAvailableCopies() - 1);
+            bookDao.update(overdueBook);
         }
 
         Dao<Reservation, Integer> reservationDao = DaoManager.createDao(connectionSource, Reservation.class);
         if (reservationDao.queryForAll().isEmpty()) {
+            log.debug("Seeding reservations");
             List<Book> books = bookDao.queryForAll();
             List<Member> members = memberDao.queryForAll();
             LocalDate today = LocalDate.now();
 
-            reservationDao.create(new Reservation(members.get(0), books.get(1), today.minusDays(1)));
-            reservationDao.create(new Reservation(members.get(1), books.get(0), today.minusDays(3)));
+            reservationDao.create(new Reservation(members.getFirst(), books.get(1), today.minusDays(1)));
         }
-    }
-
-    private void createLoan(Dao<Book, Integer> bookDao, Dao<Loan, Integer> loanDao, Member member, Book book, LocalDate loanDate, LocalDate dueDate) throws SQLException {
-        loanDao.create(new Loan(member, book, loanDate, dueDate));
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        bookDao.update(book);
     }
 }

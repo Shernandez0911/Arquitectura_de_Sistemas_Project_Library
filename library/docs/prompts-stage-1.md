@@ -18,3 +18,4 @@
 | 14     | claude-sonnet-5-5 | check services files and database for any calls to DAO methods inside a `try/catch (SQLException e)` | none (analysis only) |
 | 15     | claude-sonnet-5-5 | read "index.html" and check if the test fails because of it | none (analysis only) |
 | 16     | claude-sonnet-5-5 | check if there are any points from changes 1 to 6 that haven't been implemented yet | none (analysis only) |
+| 17     | claude-sonnet-5-5 | change database.java to match the description in change 10 | `db/Database.java` |
