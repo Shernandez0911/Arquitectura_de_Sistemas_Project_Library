@@ -20,3 +20,4 @@
 | 16     | claude-sonnet-5-5 | check if there are any points from changes 1 to 6 that haven't been implemented yet | none (analysis only) |
 | 17     | claude-sonnet-5-5 | change database.java to match the description in change 10 | `db/Database.java` |
 | 18     | claude-sonnet-5-5 | apply the changes from change 13 to app.js and index.html | `resources/public/app.js` |
+| 19     | claude-sonnet-5-5 | add the license comment and logger to logback.xml as described in change 14 | `resources/logback.xml` |
