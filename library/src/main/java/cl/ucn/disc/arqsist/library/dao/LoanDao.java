@@ -5,34 +5,20 @@
 package cl.ucn.disc.arqsist.library.dao;
 
 import cl.ucn.disc.arqsist.library.model.Loan;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 
-import java.sql.SQLException;
-import java.util.List;
+/**
+ * Data access object for {@link Loan} entities.
+ * All CRUD operations and the transaction helper are inherited from {@link BaseDao}.
+ */
+public final class LoanDao extends BaseDao<Loan> {
 
-public final class LoanDao {
-
-    private final Dao<Loan, Integer> dao;
-
-    public LoanDao(ConnectionSource connectionSource) throws SQLException {
-        this.dao = DaoManager.createDao(connectionSource, Loan.class);
-    }
-
-    public List<Loan> findAll() throws SQLException {
-        return dao.queryForAll();
-    }
-
-    public Loan findById(int id) throws SQLException {
-        return dao.queryForId(id);
-    }
-
-    public void create(Loan loan) throws SQLException {
-        dao.create(loan);
-    }
-
-    public void update(Loan loan) throws SQLException {
-        dao.update(loan);
+    /**
+     * Creates the DAO for {@link Loan}.
+     *
+     * @param connectionSource the connection source used to create the underlying ORMLite DAO.
+     */
+    public LoanDao(ConnectionSource connectionSource) {
+        super(connectionSource, Loan.class);
     }
 }

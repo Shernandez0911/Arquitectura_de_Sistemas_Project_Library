@@ -5,38 +5,20 @@
 package cl.ucn.disc.arqsist.library.dao;
 
 import cl.ucn.disc.arqsist.library.model.Book;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 
-import java.sql.SQLException;
-import java.util.List;
+/**
+ * Data access object for {@link Book} entities.
+ * All CRUD operations and the transaction helper are inherited from {@link BaseDao}.
+ */
+public final class BookDao extends BaseDao<Book> {
 
-public final class BookDao {
-
-    private final Dao<Book, Integer> dao;
-
-    public BookDao(ConnectionSource connectionSource) throws SQLException {
-        this.dao = DaoManager.createDao(connectionSource, Book.class);
-    }
-
-    public List<Book> findAll() throws SQLException {
-        return dao.queryForAll();
-    }
-
-    public Book findById(int id) throws SQLException {
-        return dao.queryForId(id);
-    }
-
-    public void create(Book book) throws SQLException {
-        dao.create(book);
-    }
-
-    public void update(Book book) throws SQLException {
-        dao.update(book);
-    }
-
-    public void delete(Book book) throws SQLException {
-        dao.delete(book);
+    /**
+     * Creates the DAO for {@link Book}.
+     *
+     * @param connectionSource the connection source used to create the underlying ORMLite DAO.
+     */
+    public BookDao(ConnectionSource connectionSource) {
+        super(connectionSource, Book.class);
     }
 }

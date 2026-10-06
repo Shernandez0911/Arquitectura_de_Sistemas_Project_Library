@@ -5,34 +5,20 @@
 package cl.ucn.disc.arqsist.library.dao;
 
 import cl.ucn.disc.arqsist.library.model.Member;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 
-import java.sql.SQLException;
-import java.util.List;
+/**
+ * Data access object for {@link Member} entities.
+ * All CRUD operations and the transaction helper are inherited from {@link BaseDao}.
+ */
+public final class MemberDao extends BaseDao<Member> {
 
-public final class MemberDao {
-
-    private final Dao<Member, Integer> dao;
-
-    public MemberDao(ConnectionSource connectionSource) throws SQLException {
-        this.dao = DaoManager.createDao(connectionSource, Member.class);
-    }
-
-    public List<Member> findAll() throws SQLException {
-        return dao.queryForAll();
-    }
-
-    public Member findById(int id) throws SQLException {
-        return dao.queryForId(id);
-    }
-
-    public void create(Member member) throws SQLException {
-        dao.create(member);
-    }
-
-    public void update(Member member) throws SQLException {
-        dao.update(member);
+    /**
+     * Creates the DAO for {@link Member}.
+     *
+     * @param connectionSource the connection source used to create the underlying ORMLite DAO.
+     */
+    public MemberDao(ConnectionSource connectionSource) {
+        super(connectionSource, Member.class);
     }
 }

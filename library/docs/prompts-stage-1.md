@@ -11,3 +11,10 @@
 | 7      | claude-sonnet-5-5 | apply changes to fix LoanService | `service/LoanService.java` |
 | 8      | claude-sonnet-5-5 | can you update this file | `prompts-stage-1.md` |
 | 9      | claude-sonnet-5-5 | create service/NotFoundException.java as described in change 4 | `service/NotFoundException.java` |
+| 10     | claude-sonnet-5-5 | can you apply the changes described in change 6 to bookservice.java | `service/BookService.java` |
+| 11     | claude-sonnet-5-5 | can you create dao/BaseDao.java as described in change 5 | `dao/BaseDao.java` |
+| 12     | claude-sonnet-5-5 | read refactor.md and resume where we left in change 5 | `dao/BookDao.java`, `dao/MemberDao.java`, `dao/LoanDao.java`, `dao/ReservationDao.java` |
+| 13     | claude-sonnet-5-5 | here is basedao to confirm everything is consistent | none (analysis only) |
+| 14     | claude-sonnet-5-5 | check services files and database for any calls to DAO methods inside a `try/catch (SQLException e)` | none (analysis only) |
+| 15     | claude-sonnet-5-5 | read "index.html" and check if the test fails because of it | none (analysis only) |
+| 16     | claude-sonnet-5-5 | check if there are any points from changes 1 to 6 that haven't been implemented yet | none (analysis only) |
