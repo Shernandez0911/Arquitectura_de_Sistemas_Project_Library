@@ -6,8 +6,8 @@ package cl.ucn.disc.arqsist.library.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-
 import java.time.LocalDate;
+import cl.ucn.disc.arqsist.library.db.LocalDatePersister;
 
 @DatabaseTable(tableName = "loans")
 public final class Loan {
