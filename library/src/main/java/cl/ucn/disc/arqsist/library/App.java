@@ -20,8 +20,18 @@ import cl.ucn.disc.arqsist.library.service.ReservationService;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 
+/**
+ * Entry point of the library application. It opens the database, wires the DAOs, services
+ * and controllers together, and starts the web server.
+ */
 public final class App {
 
+    /**
+     * Starts the application on port 7070.
+     *
+     * @param args command-line arguments, not used.
+     * @throws Exception if the database or the server cannot start.
+     */
     public static void main(String[] args) throws Exception {
         Database db = new Database("jdbc:sqlite:database.sqlite");
         db.seedIfEmpty();

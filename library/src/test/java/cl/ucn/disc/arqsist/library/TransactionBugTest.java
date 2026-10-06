@@ -17,11 +17,26 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * Checks that a failed checkout leaves the inventory unchanged.
+ */
 class TransactionBugTest {
 
+    /**
+     * DAO used to create and reload the test book.
+     */
     private BookDao bookDao;
+
+    /**
+     * Service under test.
+     */
     private MemberService memberService;
 
+    /**
+     * Builds an in-memory database and the service under test.
+     *
+     * @throws Exception if the database cannot be set up.
+     */
     @BeforeEach
     void setUp() throws Exception {
         Database db = new Database("jdbc:sqlite::memory:");
@@ -31,6 +46,12 @@ class TransactionBugTest {
         memberService = new MemberService(memberDao, bookDao, loanDao);
     }
 
+    /**
+     * Checks out a book for a member that does not exist and verifies that the copy
+     * count of the book did not change.
+     *
+     * @throws Exception if a DAO call fails.
+     */
     @Test
     void checkoutLeavesNoPartialStateOnFailure() throws Exception {
         Book book = new Book("Clean Code", "Robert C. Martin", "9780132350884", 2);

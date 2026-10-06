@@ -20,13 +20,37 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Checks that a loan made by checkout and a loan made by fulfilling a reservation
+ * get the same loan period.
+ */
 class DueDateDuplicationTest {
 
+    /**
+     * Service used to check out the book.
+     */
     private MemberService memberService;
+
+    /**
+     * Service used to reserve and fulfill.
+     */
     private ReservationService reservationService;
+
+    /**
+     * The book used by the test.
+     */
     private Book book;
+
+    /**
+     * The member used by the test.
+     */
     private Member member;
 
+    /**
+     * Builds an in-memory database with one book and one member.
+     *
+     * @throws Exception if the database cannot be set up.
+     */
     @BeforeEach
     void setUp() throws Exception {
         Database db = new Database("jdbc:sqlite::memory:");
@@ -44,6 +68,11 @@ class DueDateDuplicationTest {
         memberDao.create(member);
     }
 
+    /**
+     * Creates one loan by checkout and one by fulfill, and compares their due dates.
+     *
+     * @throws Exception if a service call fails.
+     */
     @Test
     void checkoutAndFulfillUseTheSameLoanPeriod() throws Exception {
         Loan fromCheckout = memberService.checkout(member.getId(), book.getId());

@@ -9,14 +9,31 @@ import io.javalin.config.JavalinConfig;
 
 import java.util.Objects;
 
+/**
+ * HTTP routes for reservations.
+ */
 public final class ReservationController {
 
+    /**
+     * The reservation service.
+     */
     private final ReservationService service;
 
+    /**
+     * Creates the controller.
+     *
+     * @param service the reservation service.
+     */
     public ReservationController(ReservationService service) {
         this.service = service;
     }
 
+    /**
+     * Registers the reservation routes: {@code POST /reservations}, {@code GET /reservations}
+     * and {@code POST /reservations/{id}/fulfill}.
+     *
+     * @param config the Javalin configuration that receives the routes.
+     */
     public void register(JavalinConfig config) {
         config.routes.post("/reservations", ctx -> {
             int memberId = Integer.parseInt(Objects.requireNonNull(ctx.queryParam("memberId")));
