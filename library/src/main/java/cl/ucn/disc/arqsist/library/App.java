@@ -19,6 +19,8 @@ import cl.ucn.disc.arqsist.library.service.MemberService;
 import cl.ucn.disc.arqsist.library.service.NotFoundException;
 import cl.ucn.disc.arqsist.library.service.ReservationService;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinJackson;
@@ -26,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Map;
 
@@ -74,7 +77,9 @@ public final class App {
         log.info("Starting the web server");
         Javalin app = Javalin.create(config -> {
             config.jsonMapper(new JavalinJackson().updateMapper(mapper ->
-                    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)));
+                    mapper.registerModule(new SimpleModule()
+                                    .addSerializer(LocalDate.class, ToStringSerializer.instance))
+                            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)));
             config.staticFiles.add(staticFiles -> {
                 staticFiles.hostedPath = "/";
                 staticFiles.directory = "/public";
