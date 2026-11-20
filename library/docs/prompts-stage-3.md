@@ -9,3 +9,4 @@
 | 5      | claude-sonnet-5-5 | return the updated app.java of change 5 | `App.java`, `docs/prompts-stage-3.md` |
 | 6      | claude-sonnet-5-5 | create MemberClient.java file as described in change 6 | `grpc/MemberClient.java` (new), `docs/prompts-stage-3.md` |
 | 7      | claude-sonnet-5-5 | create MemberClientApp.java as described in change 7 | `MemberClientApp.java` (new), `docs/prompts-stage-3.md` |
+| 8      | claude-sonnet-5-5 | create MemberGrpcTest.java file as described in change 8 | `src/test/java/cl/ucn/disc/arqsist/library/MemberGrpcTest.java` (new), `docs/prompts-stage-3.md` |
