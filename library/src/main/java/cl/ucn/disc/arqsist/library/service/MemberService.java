@@ -61,4 +61,19 @@ public final class MemberService {
         }
         return member;
     }
+
+    /**
+     * Search the members whose name contains a text.
+     *
+     * @param query the text to look for. Leading and trailing whitespace is ignored
+     * @return the members whose name contains the text, ordered by ID. The list is empty if none match
+     * @throws IllegalArgumentException if the query is blank
+     */
+    public List<Member> search(String query) {
+        String text = query == null ? "" : query.trim();
+        if (text.isEmpty()) {
+            throw new IllegalArgumentException("The search query must not be blank");
+        }
+        return memberDao.findByNameContaining(text);
+    }
 }

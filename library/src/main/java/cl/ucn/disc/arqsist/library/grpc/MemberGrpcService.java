@@ -99,6 +99,27 @@ public final class MemberGrpcService extends MemberServiceGrpc.MemberServiceImpl
     }
 
     /**
+     * Search members by name.
+     *
+     * @param request the request with the text to look for
+     * @param observer the reply observer
+     */
+    @Override
+    public void searchMembers(SearchMembersRequest request, StreamObserver<ListMembersReply> observer) {
+        try {
+            // A blank query makes the service throw IllegalArgumentException: toError sends INVALID_ARGUMENT.
+            List<MemberMessage> members = memberService.search(request.getQuery()).stream()
+                    .map(MemberGrpcService::toMessage)
+                    .toList();
+            // No match is not an error: the reply is an empty list with status OK.
+            observer.onNext(ListMembersReply.newBuilder().addAllMembers(members).build());
+            observer.onCompleted();
+        } catch (RuntimeException e) {
+            observer.onError(toError(e));
+        }
+    }
+
+    /**
      * Map a domain error to a gRPC status error.
      *
      * @param e the domain error

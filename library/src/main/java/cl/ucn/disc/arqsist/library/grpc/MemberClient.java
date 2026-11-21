@@ -112,6 +112,27 @@ public final class MemberClient implements AutoCloseable {
     }
 
     /**
+     * Search the members whose name contains a text.
+     *
+     * @param query the text to look for
+     * @return the members whose name contains the text, ordered by ID. The list is empty if none match
+     * @throws IllegalArgumentException if the query is blank
+     */
+    public List<Member> search(String query) {
+        try {
+            // The same deadline as the other calls.
+            ListMembersReply reply = stub.withDeadlineAfter(DEADLINE_SECONDS, TimeUnit.SECONDS)
+                    .searchMembers(SearchMembersRequest.newBuilder().setQuery(query).build());
+            return reply.getMembersList().stream()
+                    .map(MemberClient::toMember)
+                    .toList();
+        } catch (StatusRuntimeException e) {
+            // INVALID_ARGUMENT comes back as IllegalArgumentException.
+            throw toException(e);
+        }
+    }
+
+    /**
      * Close the channel. Wait for the running calls to end.
      */
     @Override
